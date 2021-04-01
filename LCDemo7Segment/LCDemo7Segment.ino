@@ -1,5 +1,9 @@
 //We always have to include the library
 #include "LedControl.h"
+#include "Wire.h"
+#include "DS3231.h"
+
+RTClib myRTC;
 
 /*
  Now we need a LedControl to work with.
@@ -24,6 +28,8 @@ void setup() {
   lc.setIntensity(0,8);
   /* and clear the display */
   lc.clearDisplay(0);
+  Serial.begin(9600);
+  Wire.begin();
 }
 
 
@@ -67,7 +73,10 @@ void scrollDigits() {
   delay(delaytime);
 }
 
-void loop() { 
-  writeArduinoOn7Segment();
-  scrollDigits();
+void loop () {
+  
+    delay(1000);
+  
+    DateTime now = myRTC.now();
+    Serial.println(now.unixtime());
 }

@@ -21,6 +21,16 @@
 
   http://www.arduino.cc/en/Tutorial/Blink
 */
+#include "LedControl.h"
+/*
+ Now we need a LedControl to work with.
+ ***** These pin numbers will probably not work with your hardware *****
+ pin 7 is connected to the DataIn 
+ pin 6 is connected to the CLK 
+ pin 5 is connected to LOAD 
+ We have only a single MAX72XX.
+ */
+LedControl lc=LedControl(7,6,5,1);
 
 // the setup function runs once when you press reset or power the board
 void setup() {

@@ -5,6 +5,28 @@ import time
 import board
 import pwmio
 
+from adafruit_max7219 import bcddigits
+#from board import TX, RX, A2
+import bitbangio
+import digitalio
+print("hello")
+
+clk = board.GP6
+din = board.GP7
+cs = digitalio.DigitalInOut(board.GP5)
+
+spi = bitbangio.SPI(clk, MOSI=din)
+print("made spi")
+digit_display = bcddigits.BCDDigits(spi, cs, nDigits=4)
+print("made display")
+digit_display.clear_all()
+
+print("cleared")
+digit_display.show_str("123")
+digit_display.show()
+
+print("hello")
+
 class Voltmeter_Display(object):
 
     def __init__(self, pin):

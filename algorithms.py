@@ -18,7 +18,7 @@ def calculate_julian_ephemeris_day(seconds_since_epoch):
     
     return JDE
 
-def find_T_since_jealian_epoch(seconds_since_epoch):
+def find_T_since_julian_epoch(seconds_since_epoch):
     ''' this is expressed in fractional centuries which means that at least 9 decimal places should be taken '''
     
     JDE = calculate_julian_ephemeris_day(seconds_since_epoch)
@@ -27,4 +27,28 @@ def find_T_since_jealian_epoch(seconds_since_epoch):
 
     return T
 
-print(find_T_since_jealian_epoch(1617531924))
+def calculate_moon_distance(seconds_since_epoch):
+
+    T = find_T_since_julian_epoch(seconds_since_epoch)
+
+    # these quantities are in degrees so reduce them to be
+    # in the interval [0, 360)
+
+    # mean elongation of the Moon
+    D = 297.8501921 + 445267.1114034*T - 0.0018819*(T**2) + (T**3)/545868 - (T**4)/113065000
+    D = D % 360
+    
+    # sun's mean anomaly
+    M = 357.5291092 + 35999.0502909*T - 0.0001536*(T**2) + (T**3)/24490000
+    M = M % 360
+
+    # moon's mean anomaly
+    M_prime = 134.9633964 + 477198.8675055*T + 0.0087414*(T**2) + (T**3)/69699 - (T**4)/14712000
+    M_prime = M_prime % 360
+    
+    # moon's argument of latitude (mean distance of the moon from its ascending node)
+    F = 93.2720950 + 483202.0175233*T - 0.0036539*(T**2) - (T**3)/3526000 + (T**4)/863310000
+    F = F % 360
+
+    return -1
+print(calculate_moon_distance(703036800))

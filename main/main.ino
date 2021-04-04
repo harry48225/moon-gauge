@@ -15,6 +15,8 @@ RTClib myRTC;
  */
 LedControl lc=LedControl(7,6,5,1);
 
+int VOLTMETER_PIN = 28;
+
 /* we always wait a bit between updates of the display */
 unsigned long delaytime=250;
 
@@ -30,24 +32,20 @@ void setup() {
   lc.clearDisplay(0);
   Serial.begin(9600);
   Wire.begin();
+
+  pinMode(VOLTMETER_PIN, OUTPUT);
 }
 
 
-/*
-  This method will scroll all the hexa-decimal
- numbers and letters on the display. You will need at least
- four 7-Segment digits. otherwise it won't really look that good.
- */
-void scrollDigits() {
-  for(int i=0;i<13;i++) {
-    lc.setDigit(0,3,i,false);
-    lc.setDigit(0,2,i+1,false);
-    lc.setDigit(0,1,i+2,false);
-    lc.setDigit(0,0,i+3,false);
-    delay(delaytime);
-  }
-  lc.clearDisplay(0);
-  delay(delaytime);
+void display_on_voltmeter(float current, float minimum, float maximum) {
+  /* display a value between min and max on the voltmeter*/
+
+  float multiplier = (current - minimum) / (maximum - minimum);
+
+  float write_value = 255 * multiplier;
+  analogWrite(VOLTMETER_PIN, (int) write_value);
+  Serial.println(write_value);
+  
 }
 
 /*
@@ -65,11 +63,11 @@ void display_double(double number) {
 
 void loop () {
   
-    delay(1000);
-  
+    delay(500);
     DateTime now = myRTC.now();
     double unixtime = now.unixtime();
     display_double(unixtime);
-    
+
+    display_on_voltmeter(now.second(), 0, 60);
     Serial.println(now.unixtime());
 }

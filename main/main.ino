@@ -36,15 +36,24 @@ void setup() {
   pinMode(VOLTMETER_PIN, OUTPUT);
 }
 
-
+int current_voltmeter = 0;
 void display_on_voltmeter(float current, float minimum, float maximum) {
   /* display a value between min and max on the voltmeter*/
 
   float multiplier = (current - minimum) / (maximum - minimum);
 
   float write_value = 255 * multiplier;
-  analogWrite(VOLTMETER_PIN, (int) write_value);
-  Serial.println(write_value);
+  
+  // interpolate between the previous and new value
+  for (float i = 0; i <= 4; i++) {
+    int interpolated_value = current_voltmeter + (i/4)*(write_value - current_voltmeter);
+    delay(100);
+    analogWrite(VOLTMETER_PIN, (int) interpolated_value);
+    Serial.println(interpolated_value);
+  }
+
+  current_voltmeter = write_value;
+  
   
 }
 

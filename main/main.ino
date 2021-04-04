@@ -2,6 +2,7 @@
 #include "LedControl.h"
 #include "Wire.h"
 #include "DS3231.h"
+#include "math.h"
 
 RTClib myRTC;
 
@@ -19,6 +20,42 @@ int VOLTMETER_PIN = 28;
 
 /* we always wait a bit between updates of the display */
 unsigned long delaytime=250;
+
+double reduce_angle(double angle) {
+  /* reduces the angle to be in [0, 360)*/
+
+  return angle - 360 * floor(angle / 360);
+}
+
+/* Moon calculations - taken from  Astronomical algorithms by Jean Meeus */
+double find_T_since_julian_epoch(double seconds_since_epoch) {
+  return (seconds_since_epoch - 946727936)/((double) 60*60*24*36525);
+}
+
+double find_D(double T) {
+  /* calculates the mean elongation of the Moon */
+  double D = 297.8501921 + 445267.1114034*T - 0.0018819*pow(T,2) + pow(T,3)/545868 - pow(T,4)/113065000;
+  return reduce_angle(D);
+}
+
+double find_M(double T) {
+  /* calculates the Sun's mean anomaly */
+  double M = 357.5291092 + 35999.0502909*T - 0.0001536*pow(T,2) + pow(T,3)/24490000;
+  return reduce_angle(M);
+}
+
+double find_M_prime(double T) {
+  /* calculates the Moon's mean anomaly */
+  double M_prime = 134.9633964 + 477198.8675055*T + 0.0087414*pow(T,2) + pow(T,3)/69699 - pow(T,4)/14712000;
+  return reduce_angle(M_prime);
+}
+
+double find_F(double T) {
+  /* calculates the moon's argument of latitude (mean distance of the moon from its ascending node) */
+  double F = 93.2720950 + 483202.0175233*T - 0.0036539*pow(T,2) - pow(T,3)/3526000 + pow(T,4)/863310000;
+  return reduce_angle(F);
+}
+
 
 void setup() {
   /*
@@ -79,4 +116,13 @@ void loop () {
 
     display_on_voltmeter(now.second(), 0, 60);
     Serial.println(now.unixtime());
+
+    double T = find_T_since_julian_epoch((double) now.unixtime());
+    Serial.println("---calculations---");
+    Serial.println(T,10);
+    Serial.println(find_D(T),10);
+    Serial.println(find_M(T),10);
+    Serial.println(find_M_prime(T),10);
+    Serial.println(find_F(T),10);
+    Serial.println("------");
 }

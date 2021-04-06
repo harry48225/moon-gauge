@@ -177,8 +177,6 @@ void loop () {
     DateTime now = myRTC.now();
     double unixtime = now.unixtime();
     
-
-    
     Serial.println(now.unixtime());
 
     long moon_distance = calculate_moon_distance((double) now.unixtime());

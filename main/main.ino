@@ -127,8 +127,8 @@ void setup() {
    we have to do a wakeup call
    */
   lc.shutdown(0,false);
-  /* Set the brightness to a medium values */
-  lc.setIntensity(0,8);
+  /* Set the brightness to a low values */
+  lc.setIntensity(0,2);
   /* and clear the display */
   lc.clearDisplay(0);
   Serial.begin(9600);
@@ -143,7 +143,8 @@ void display_on_voltmeter(double current, double minimum, double maximum) {
 
   float multiplier = (current - minimum) / (maximum - minimum);
 
-  float write_value = 255 * multiplier;
+  // 3/3.3 * 255 = 231.8
+  float write_value = 232 * multiplier;
   
   // interpolate between the previous and new value
   for (float i = 0; i <= 4; i++) {
@@ -164,8 +165,8 @@ void display_on_voltmeter(double current, double minimum, double maximum) {
 void display_long(long number) {
   long head = (((long) number) % 100000000);
   Serial.println(number);
-  for (int i = 0; i < 8; i++) {
-    lc.setDigit(0,i, head%(10),false);
+  for (int i = 0; i < 6; i++) {
+    lc.setDigit(0,i+1, head%(10),false);
     Serial.println(head%(10));
     head = head / 10;
   }
